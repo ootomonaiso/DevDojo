@@ -69,6 +69,39 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'network',
+        path: 'network-docs',
+        routeBasePath: 'network',
+        sidebarPath: require.resolve('./sidebars-network.ts'),
+        editUrl: 'https://github.com/ootomonaiso/DevDojo/tree/main/DevDojo/',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'linux',
+        path: 'linux-docs',
+        routeBasePath: 'linux',
+        sidebarPath: require.resolve('./sidebars-linux.ts'),
+        editUrl: 'https://github.com/ootomonaiso/DevDojo/tree/main/DevDojo/',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'development',
+        path: 'development-docs',
+        routeBasePath: 'development',
+        sidebarPath: require.resolve('./sidebars-development.ts'),
+        editUrl: 'https://github.com/ootomonaiso/DevDojo/tree/main/DevDojo/',
+      },
+    ],
+  ],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
@@ -84,6 +117,31 @@ const config: Config = {
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'ドキュメント',
+        },
+        {
+          type: 'dropdown',
+          label: '学習コンテンツ',
+          position: 'left',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'networkSidebar',
+              docsPluginId: 'network',
+              label: 'ネットワーク',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'linuxSidebar',
+              docsPluginId: 'linux',
+              label: 'Linux',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'developmentSidebar',
+              docsPluginId: 'development',
+              label: '開発基礎',
+            },
+          ],
         },
         {to: '/blog', label: 'ブログ', position: 'left'},
         {
@@ -102,6 +160,23 @@ const config: Config = {
             {
               label: 'はじめに',
               to: '/docs/intro',
+            },
+          ],
+        },
+        {
+          title: '学習コンテンツ',
+          items: [
+            {
+              label: 'ネットワーク',
+              to: '/network/introduction',
+            },
+            {
+              label: 'Linux',
+              to: '/linux/introduction',
+            },
+            {
+              label: '開発基礎',
+              to: '/development/introduction',
             },
           ],
         },
