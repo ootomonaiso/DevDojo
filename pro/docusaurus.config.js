@@ -9,7 +9,7 @@ const config = {
   baseUrl: '/',
 
   organizationName: 'ootomonaiso',
-  projectName: 'ootomonaiso_strage',  
+  projectName: 'DevDojo',  
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
