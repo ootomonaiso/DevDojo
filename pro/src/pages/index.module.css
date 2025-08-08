@@ -12,7 +12,6 @@
 }
 
 .bgWave {
-.bgWave {
   position: absolute;
   left: 0; right: 0; top: 0; z-index: 0;
   width: 100%; height: 220px;
@@ -22,13 +21,13 @@
   opacity: 0.3;
   pointer-events: none;
 }
-}
 .heroSection {
   position: relative;
   overflow: hidden;
   background: transparent;
   padding-top: 3.5rem;
   margin-bottom: 2.5rem;
+  animation: fadeIn 1s ease-in-out;
 }
 .heroTitle {
   font-size: 2.8rem;
@@ -38,6 +37,7 @@
   margin-bottom: 0.5rem;
   z-index: 1;
   position: relative;
+  animation: fadeInUp 1.2s cubic-bezier(.23,1.02,.32,1) 0.2s both;
 }
 .kari {
   font-size: 1.1rem;
@@ -51,6 +51,7 @@
   z-index: 1;
   position: relative;
   opacity: 0.8;
+  animation: fadeInUp 1.2s cubic-bezier(.23,1.02,.32,1) 0.4s both;
 }
 .mainContent {
   max-width: 820px;
@@ -72,6 +73,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  animation: fadeInUp 0.8s cubic-bezier(.23,1.02,.32,1) 0.1s both;
 }
 .sectionIcon {
   font-size: 1.2em;
@@ -186,7 +188,18 @@
   border-radius: 0.5rem;
   border: 1px solid var(--ifm-color-emphasis-200);
   transition: all 0.2s ease;
+  animation: fadeInUp 0.8s cubic-bezier(.23,1.02,.32,1) both;
 }
+
+/* スタガードアニメーション */
+.courseItem:nth-child(1) { animation-delay: 0.1s; }
+.courseItem:nth-child(2) { animation-delay: 0.2s; }
+.courseItem:nth-child(3) { animation-delay: 0.3s; }
+.courseItem:nth-child(4) { animation-delay: 0.4s; }
+.courseItem:nth-child(5) { animation-delay: 0.5s; }
+.courseItem:nth-child(6) { animation-delay: 0.6s; }
+.courseItem:nth-child(7) { animation-delay: 0.7s; }
+.courseItem:nth-child(8) { animation-delay: 0.8s; }
 
 .courseItem:hover {
   border-color: var(--dojo-accent-color);
@@ -382,26 +395,27 @@
     min-width: auto;
   }
 }
-.heroSection {
-  background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
-  padding: 3rem 1rem 2rem 1rem;
-  text-align: center;
-  border-radius: 0 0 2rem 2rem;
-  box-shadow: 0 4px 24px 0 rgba(80,120,180,0.08);
-  margin-bottom: 2rem;
+/* アニメーション定義 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.heroTitle {
-  font-size: 2.8rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #2e3a59;
-  margin-bottom: 0.5rem;
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
-.kari {
-  font-size: 1.2rem;
-  color: #888;
-  font-weight: 400;
-}
+
 /* レスポンシブ対応 */
 @media (max-width: 600px) {
   .heroTitle {

@@ -2,8 +2,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'ootomonaiso blog',
-  tagline: '大友内装(粒)の技術ブログ',
+  title: '大友情報道場(仮)',
+  tagline: 'インフラからアプリ制作まで幅広く学べる部員用技術勉強会のポータルページ',
   favicon: 'img/favicon.ico',
   url: 'https://ootomonaiso.github.io',
   baseUrl: '/',
