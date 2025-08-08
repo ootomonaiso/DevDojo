@@ -58,36 +58,11 @@ const config = {
             to: '/docs/intro',
             position: 'left',
             label: '自己紹介',
-          },
-          {
-            to: '/blog',
-            label: 'Blog', 
-            position: 'left'
-          },
-          {
-            to: '/NetWork/intro',
-            position: 'left',
-            label: 'NetWork',
-          },
-          {
-            to: '/IT_gyoumu/intro',
-            position: 'left',
-            label: '業務用ITソフトウェア',
-          },
-          {
-            to: '/yoshinashi/intro',
-            position: 'left',
-            label: 'よしなしこと',
-          },
-          {
-            href: 'https://github.com/ootomonaiso',
-            label: 'GitHub',
-            position: 'right',
+
+
           },
         ],
       },
-
-
       footer: {
         style: 'dark',
         links: [

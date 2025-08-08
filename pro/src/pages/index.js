@@ -1,55 +1,134 @@
-import React from 'react';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
-import Link from '@docusaurus/Link';
 
 export default function Home() {
   return (
     <Layout
-      title="ポートフォリオ"
-      description="エンジニアのポートフォリオ兼技術ブログです。"
+      title="大友情報道場(仮)"
+      description="インフラからアプリ制作まで幅広く学べる部員用技術勉強会のポータルページ"
     >
-      <header className="hero hero--primary">
-        <div className="container">
-          <h1 className="hero__title">大友内装(粒)</h1>
-          <p className="hero__subtitle">フルスタックエンジニアになりたかったエンジニア / やっぱWebなんすわ</p>
-          <div style={{ marginTop: '1.5rem' }}>
-            <Link className="button button--secondary button--lg" to="/docs/intro">
-              技術記事を見る
-            </Link>
-          </div>
-          <div style={{ marginTop: '1rem' }}>
-            <a href="https://github.com/ootomonaiso" target="_blank" style={{ marginRight: '1rem' }}>
-              GitHub
-            </a>
-            <a href="https://x.com/ootomonaiso" target="_blank">
-              X (旧Twitter)
-            </a>
-          </div>
-        </div>
-      </header>
-
-      <main className="container margin-vert--lg">
-        <h2>主なスキル</h2>
-        <ul>
-          <li>React / TypeScript</li>
-          <li>Python / 機械学習</li>
-          <li>Proxmox / サーバー構築</li>
-        </ul>
-
-        <h2 style={{ marginTop: '2rem' }}>プロジェクト紹介</h2>
-        <div className="row">
-          <div className="col col--6">
-            <div className="card">
-              <div className="card__header">
-                <h3>Rocket Simulator</h3>
+      <div className={styles.heroSection}>
+        <div className={styles.bgWave}></div>
+        <h1 className={styles.heroTitle}>大友情報道場<small className={styles.kari}>(仮)</small></h1>
+        <p className={styles.heroLead}>インフラからアプリ制作まで幅広く学べる<br />部員用技術勉強会のポータルページ</p>
+      </div>
+      <main className={styles.mainContent}>
+        <section className={styles.cardSection}>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionIcon}>📋</span>
+            概要
+          </h2>
+          <div className={styles.card}>
+            <div className={styles.overview}>
+              <div className={styles.overviewItem}>
+                <strong className={styles.label}>目的</strong>
+                <span>インフラからアプリ開発まで幅広い技術領域をカバーした実践的な学習コミュニティ</span>
               </div>
-              <div className="card__body">
-                <p>物理エンジンを使ったロケット飛行シミュレーション。3D描画と風の影響も反映。</p>
+              <div className={styles.overviewItem}>
+                <strong className={styles.label}>対象</strong>
+                <span>部員・技術に興味のある学習者</span>
+              </div>
+              <div className={styles.overviewItem}>
+                <strong className={styles.label}>形式</strong>
+                <span>ハンズオン形式の勉強会 + オンライン教材</span>
               </div>
             </div>
           </div>
-        </div>
+        </section>
+        
+        <section className={styles.cardSection}>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionIcon}>📅</span>
+            開始期間予定
+          </h2>
+          <div className={styles.card}>
+            <p style={{textAlign: 'center', color: 'var(--ifm-color-emphasis-600)', fontSize: '1.1rem', padding: '2rem'}}>
+              ここにGoogleカレンダーを埋め込み予定
+            </p>
+          </div>
+        </section>
+
+        <section className={styles.cardSection}>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionIcon}>🛠️</span>
+            行う予定の講座
+          </h2>
+          <div className={styles.techGrid}>
+            <div className={styles.techCategory}>
+              <h3 className={styles.categoryTitle}>Infrastructure</h3>
+              <div className={styles.techItems}>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>🐧</span>
+                  <div>
+                    <strong>Linux(Ubuntu)基礎</strong>
+                    <p>OSの仕組み・コマンドライン操作</p>
+                  </div>
+                </div>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>🌐</span>
+                  <div>
+                    <strong>ネットワーク</strong>
+                    <p>TCP/IP・HTTP・DNS の基礎</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className={styles.techCategory}>
+              <h3 className={styles.categoryTitle}>Development</h3>
+              <div className={styles.techItems}>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>🐍</span>
+                  <div>
+                    <strong>Python API開発</strong>
+                    <p>FastAPI・REST API設計</p>
+                  </div>
+                </div>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>💾</span>
+                  <div>
+                    <strong>データベース</strong>
+                    <p>SQL・NoSQL・ORMの使い方</p>
+                  </div>
+                </div>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>🤖</span>
+                  <div>
+                    <strong>AI支援開発</strong>
+                    <p>VSCode + Copilot活用術</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className={styles.techCategory}>
+              <h3 className={styles.categoryTitle}>Engineering</h3>
+              <div className={styles.techItems}>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>📐</span>
+                  <div>
+                    <strong>設計原則</strong>
+                    <p>オブジェクト指向・MVC・Clean Code</p>
+                  </div>
+                </div>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>🔐</span>
+                  <div>
+                    <strong>認証・認可</strong>
+                    <p>OAuth・JWT・セキュリティ基礎</p>
+                  </div>
+                </div>
+                <div className={styles.techItem}>
+                  <span className={styles.techIcon}>🔧</span>
+                  <div>
+                    <strong>DevOps基礎</strong>
+                    <p>Git・GitHub・CI/CD入門</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </Layout>
   );
