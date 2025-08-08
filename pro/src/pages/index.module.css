@@ -1,3 +1,17 @@
+/* テーマ対応のアクセントカラー定義 */
+:root {
+  --dojo-accent-color: #28a745;
+  --dojo-accent-light: #34ce57;
+  --dojo-accent-bg: rgba(40, 167, 69, 0.1);
+}
+
+[data-theme='dark'] {
+  --dojo-accent-color: #40d065;
+  --dojo-accent-light: #52e077;
+  --dojo-accent-bg: rgba(64, 208, 101, 0.15);
+}
+
+.bgWave {
 .bgWave {
   position: absolute;
   left: 0; right: 0; top: 0; z-index: 0;
@@ -7,6 +21,7 @@
   filter: blur(1px) brightness(1.08);
   opacity: 0.3;
   pointer-events: none;
+}
 }
 .heroSection {
   position: relative;
@@ -50,9 +65,9 @@
   color: var(--ifm-font-color-base);
   margin-bottom: 0.7rem;
   letter-spacing: 0.02em;
-  border-left: 4px solid #28a745;
+  border-left: 4px solid var(--dojo-accent-color);
   padding: 0.5rem 0.8rem;
-  background: var(--ifm-color-emphasis-100);
+  background: var(--dojo-accent-bg);
   border-radius: 0 0.4rem 0.4rem 0;
   display: flex;
   align-items: center;
@@ -60,7 +75,7 @@
 }
 .sectionIcon {
   font-size: 1.2em;
-  color: #28a745;
+  color: var(--dojo-accent-color);
 }
 .overview {
   display: flex;
@@ -78,7 +93,7 @@
   border-bottom: none;
 }
 .label {
-  background: #28a745;
+  background: var(--dojo-accent-color);
   color: white;
   padding: 0.3rem 0.8rem;
   border-radius: 0.4rem;
@@ -87,6 +102,7 @@
   font-size: 0.8rem;
   text-align: center;
   flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 /* タイムライン全体をカードスタイルに */
 .timeline {
@@ -112,7 +128,7 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background: #28a745;
+  background: var(--dojo-accent-color);
 }
 .timelineItem {
   display: flex;
@@ -133,7 +149,7 @@
 
 .timelineBadge {
   background: var(--ifm-background-color);
-  color: #28a745;
+  color: var(--dojo-accent-color);
   padding: 0.5rem 1.2rem;
   border-radius: 1.5rem;
   font-size: 0.85rem;
@@ -143,11 +159,11 @@
   box-shadow: var(--ifm-global-shadow-lw);
   z-index: 2;
   flex-shrink: 0;
-  border: 2px solid #28a745;
+  border: 2px solid var(--dojo-accent-color);
 }
 .timelineContent h4 {
   margin: 0 0 0.5rem 0;
-  color: #28a745;
+  color: var(--dojo-accent-color);
   font-weight: 600;
   font-size: 1rem;
 }
@@ -157,6 +173,41 @@
   font-size: 0.9rem;
   opacity: 0.9;
 }
+/* コース一覧グリッド */
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.courseItem {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  transition: all 0.2s ease;
+}
+
+.courseItem:hover {
+  border-color: var(--dojo-accent-color);
+  box-shadow: 0 2px 8px var(--dojo-accent-bg);
+  background: var(--dojo-accent-bg);
+}
+
+.courseItem h3 {
+  color: var(--ifm-font-color-base);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.courseItem p {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
 .techGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -176,7 +227,7 @@
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 2px solid #28a745;
+  border-bottom: 2px solid var(--dojo-accent-color);
   padding-bottom: 0.5rem;
 }
 .techItems {
@@ -197,7 +248,7 @@
 .techItem:hover {
   transform: translateX(4px);
   box-shadow: var(--ifm-global-shadow-lw);
-  border-color: #28a745;
+  border-color: var(--dojo-accent-color);
 }
 .techIcon {
   font-size: 1.5rem;
@@ -260,12 +311,12 @@
   margin: 1.1rem 0 0 0;
 }
 .cardItem {
-  background: rgba(247,250,252,0.95);
+  background: var(--ifm-background-color);
   border-radius: 0.9rem;
-  box-shadow: 0 2px 12px 0 rgba(80,120,180,0.09);
+  box-shadow: var(--ifm-global-shadow-lw);
   padding: 0.85rem 1.3rem;
   font-size: 1.07rem;
-  color: #2e3a59;
+  color: var(--ifm-font-color-base);
   flex: 1 1 260px;
   min-width: 180px;
   margin: 0;
@@ -274,14 +325,14 @@
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 0.8s cubic-bezier(.23,1.02,.32,1) forwards;
-  border: 1.2px solid #e0eafc;
+  border: 1.2px solid var(--ifm-color-emphasis-200);
   backdrop-filter: blur(1.5px);
 }
 .cardItem:hover {
-  box-shadow: 0 8px 32px 0 rgba(80,120,180,0.18);
+  box-shadow: var(--ifm-global-shadow-md);
   transform: translateY(-4px) scale(1.04);
-  background: #e0eafc;
-  border-color: #b6c8e6;
+  background: var(--dojo-accent-bg);
+  border-color: var(--dojo-accent-color);
 }
 .cardItem:nth-child(1) { animation-delay: 0.55s; }
 .cardItem:nth-child(2) { animation-delay: 0.65s; }
@@ -351,53 +402,7 @@
   color: #888;
   font-weight: 400;
 }
-.heroLead {
-  font-size: 1.3rem;
-  color: #3a4a6a;
-  margin-bottom: 0;
-}
-.mainContent {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 1rem 2rem 1rem;
-}
-.cardSection {
-  margin-bottom: 2.5rem;
-}
-.card {
-  background: #fff;
-  border-radius: 1.2rem;
-  box-shadow: 0 2px 16px 0 rgba(80,120,180,0.10);
-  padding: 1.2rem 1.5rem;
-  margin-top: 0.7rem;
-  font-size: 1.08rem;
-  color: #2e3a59;
-}
-.cardList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0 0 0;
-}
-.cardItem {
-  background: #f7fafc;
-  border-radius: 0.8rem;
-  box-shadow: 0 1px 6px 0 rgba(80,120,180,0.07);
-  padding: 0.7rem 1.2rem;
-  font-size: 1.05rem;
-  color: #2e3a59;
-  flex: 1 1 260px;
-  min-width: 180px;
-  margin: 0;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-.cardItem:hover {
-  box-shadow: 0 4px 16px 0 rgba(80,120,180,0.15);
-  transform: translateY(-2px) scale(1.03);
-  background: #e0eafc;
-}
+/* レスポンシブ対応 */
 @media (max-width: 600px) {
   .heroTitle {
     font-size: 2rem;

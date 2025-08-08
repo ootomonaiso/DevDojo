@@ -53,78 +53,39 @@ export default function Home() {
             <span className={styles.sectionIcon}>🛠️</span>
             行う予定の講座
           </h2>
-          <div className={styles.techGrid}>
-            <div className={styles.techCategory}>
-              <h3 className={styles.categoryTitle}>Infrastructure</h3>
-              <div className={styles.techItems}>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>🐧</span>
-                  <div>
-                    <strong>Linux(Ubuntu)基礎</strong>
-                    <p>OSの仕組み・コマンドライン操作</p>
-                  </div>
-                </div>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>🌐</span>
-                  <div>
-                    <strong>ネットワーク</strong>
-                    <p>TCP/IP・HTTP・DNS の基礎</p>
-                  </div>
-                </div>
+          <div className={styles.card}>
+            <div className={styles.courseGrid}>
+              <div className={styles.courseItem}>
+                <h3>🐧 Linux(Ubuntu)基礎</h3>
+                <p>OSの仕組み・コマンドライン操作</p>
               </div>
-            </div>
-            
-            <div className={styles.techCategory}>
-              <h3 className={styles.categoryTitle}>Development</h3>
-              <div className={styles.techItems}>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>🐍</span>
-                  <div>
-                    <strong>Python API開発</strong>
-                    <p>FastAPI・REST API設計</p>
-                  </div>
-                </div>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>💾</span>
-                  <div>
-                    <strong>データベース</strong>
-                    <p>SQL・NoSQL・ORMの使い方</p>
-                  </div>
-                </div>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>🤖</span>
-                  <div>
-                    <strong>AI支援開発</strong>
-                    <p>VSCode + Copilot活用術</p>
-                  </div>
-                </div>
+              <div className={styles.courseItem}>
+                <h3>🌐 ネットワーク</h3>
+                <p>TCP/IP・HTTP・DNS の基礎</p>
               </div>
-            </div>
-            
-            <div className={styles.techCategory}>
-              <h3 className={styles.categoryTitle}>Engineering</h3>
-              <div className={styles.techItems}>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>📐</span>
-                  <div>
-                    <strong>設計原則</strong>
-                    <p>オブジェクト指向・MVC・Clean Code</p>
-                  </div>
-                </div>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>🔐</span>
-                  <div>
-                    <strong>認証・認可</strong>
-                    <p>OAuth・JWT・セキュリティ基礎</p>
-                  </div>
-                </div>
-                <div className={styles.techItem}>
-                  <span className={styles.techIcon}>🔧</span>
-                  <div>
-                    <strong>DevOps基礎</strong>
-                    <p>Git・GitHub・CI/CD入門</p>
-                  </div>
-                </div>
+              <div className={styles.courseItem}>
+                <h3>🐍 Python API開発</h3>
+                <p>FastAPI・REST API設計</p>
+              </div>
+              <div className={styles.courseItem}>
+                <h3>💾 データベース</h3>
+                <p>SQL・NoSQL・ORMの使い方</p>
+              </div>
+              <div className={styles.courseItem}>
+                <h3>🤖 AI支援開発</h3>
+                <p>VSCode + Copilot活用術</p>
+              </div>
+              <div className={styles.courseItem}>
+                <h3>📐 設計原則</h3>
+                <p>オブジェクト指向・MVC・Clean Code</p>
+              </div>
+              <div className={styles.courseItem}>
+                <h3>🔐 認証・認可</h3>
+                <p>OAuth・JWT・セキュリティ基礎</p>
+              </div>
+              <div className={styles.courseItem}>
+                <h3>🔧 DevOps基礎</h3>
+                <p>Git・GitHub・CI/CD入門</p>
               </div>
             </div>
           </div>
