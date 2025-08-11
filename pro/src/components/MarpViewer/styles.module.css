@@ -1,0 +1,248 @@
+.marpContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--ifm-color-primary);
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--ifm-color-primary);
+}
+
+.slideCounter {
+  font-weight: bold;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--ifm-color-emphasis-200);
+  border-radius: 2px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: var(--ifm-color-primary);
+  transition: width 0.3s ease;
+}
+
+.slideContainer {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* 内側のwrapperを中央寄せ（dangerouslySetInnerHTMLで入るdiv） */
+.slideContainer > div {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* 16:9 レスポンシブ比率ボックス */
+.ratioBox {
+  position: relative;
+  width: 100%;
+  background: transparent;
+}
+
+@supports (aspect-ratio: 16 / 9) {
+  .ratioBox { aspect-ratio: 16 / 9; }
+  .ratioBox::before { content: none; }
+}
+
+@supports not (aspect-ratio: 16 / 9) {
+  .ratioBox::before {
+    content: '';
+    display: block;
+    padding-top: 56.25%;
+  }
+}
+
+.slideStage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.slide {
+  width: 100%;
+  margin: 0 auto;
+  background: transparent; /* 外側は透明に */
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px; /* 説明文との間隔 */
+  flex-wrap: wrap;
+}
+
+.descriptionPanel {
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-left: 4px solid var(--ifm-color-warning);
+  margin-bottom: 20px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.descriptionPanel h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 1.2rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  padding-bottom: 0.5rem;
+}
+
+.descriptionContent {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.descriptionContent h1, .descriptionContent h2, .descriptionContent h3 {
+  color: var(--ifm-color-primary);
+}
+
+.descriptionContent ul {
+  padding-left: 1.5rem;
+}
+
+.descriptionContent li {
+  margin-bottom: 0.5rem;
+}
+
+.active {
+  background: var(--ifm-color-primary) !important;
+  color: white !important;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px; /* 説明文との間隔 */
+  flex-wrap: wrap;
+  padding: 15px;
+  background: var(--ifm-color-emphasis-50);
+  border-radius: 8px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.controlButton {
+  padding: 10px 16px;
+  border: 2px solid var(--ifm-color-primary);
+  background: white;
+  color: var(--ifm-color-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.controlButton:hover:not(:disabled) {
+  background: var(--ifm-color-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.controlButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.slideInfo {
+  padding: 10px 20px;
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 6px;
+  font-weight: bold;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.help {
+  text-align: center;
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .slideContainer {
+    margin-bottom: 15px;
+  }
+  
+  .controls {
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .descriptionPanel {
+    padding: 1rem;
+    margin-bottom: 15px;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .controlButton {
+    width: 200px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Marpスライドの追加調整（横ズレ防止のためdisplay:block） */
+.slide { display: block; }
+
+/* 空白削除のための追加CSS */
+.slide > section { margin: 0 !important; }
+
+/* ダークモード */
+[data-theme='dark'] .controlButton {
+  background: var(--ifm-background-color);
+  border-color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .slideInfo {
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-900);
+}

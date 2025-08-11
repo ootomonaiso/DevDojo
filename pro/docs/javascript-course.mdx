@@ -1,0 +1,236 @@
+---
+title: JavaScript基礎講座（Marp版）
+description: MarpをDocusaurusに統合したインタラクティブなJavaScript講座
+sidebar_position: 1
+---
+
+import MarpViewer from '@site/src/components/MarpViewer';
+
+# 🚀 JavaScript基礎講座（Marp版）
+
+この講座では、本物のMarp記法で作成したスライドをDocusaurus内で直接表示します！
+
+export const marpContent = `---
+marp: true
+theme: default
+paginate: true
+backgroundColor: #fff
+style: |
+  section {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+  h1 {
+    color: #2563eb;
+  }
+  h2 {
+    color: #7c3aed;
+  }
+---
+
+# JavaScript基礎講座 🚀
+## 第1回：JavaScriptとは
+
+**講師**: 田中太郎  
+**日程**: 2025年8月11日
+
+---
+
+# JavaScriptとは何か？
+
+JavaScriptは**Webページに命を吹き込む**プログラミング言語です。
+
+## 主な特徴
+
+- 🌐 **ブラウザで動作** - HTMLと組み合わせて使用
+- ⚡ **動的でインタラクティブ** - ユーザーの操作に反応
+- 📱 **マルチプラットフォーム** - Web, モバイル, デスクトップ
+- 🔄 **イベント駆動** - クリックや入力に応じて処理実行
+
+---
+
+# どこで使われている？
+
+## Webフロントエンド
+- React, Vue.js, Angular
+- インタラクティブなUI作成
+
+## サーバーサイド
+- Node.js
+- API開発、データベース操作
+
+## モバイルアプリ
+- React Native, Ionic
+- クロスプラットフォーム開発
+
+---
+
+# 変数の宣言 📝
+
+JavaScriptでは**3つの方法**で変数を宣言できます。
+
+\`\`\`javascript
+// 現代的な書き方（推奨）
+let userName = '山田太郎';      // 再代入可能
+const userAge = 25;            // 再代入不可（定数）
+
+// 古い書き方（非推奨）
+var userCity = 'Tokyo';        // スコープに問題あり
+\`\`\`
+
+## 💡 使い分けのコツ
+1. **const** 👑 - 値が変わらない場合（最優先）
+2. **let** ✨ - 値が変わる場合
+3. **var** ❌ - 使わない
+
+---
+
+# 実習問題 💪
+
+以下の課題に取り組んでみましょう！
+
+## 問題1: 自己紹介関数
+名前と年齢を受け取って、自己紹介文を返す関数を作成してください。
+
+\`\`\`javascript
+const introduce = (name, age) => {
+    // ここにコードを書いてください
+};
+
+// テスト
+console.log(introduce('田中', 25));
+// 期待結果: "私の名前は田中です。年齢は25歳です。"
+\`\`\`
+
+---
+
+# 解答例 ✅
+
+\`\`\`javascript
+// 問題1の解答
+const introduce = (name, age) => {
+    return \`私の名前は\${name}です。年齢は\${age}歳です。\`;
+};
+
+// より実用的な例
+const createUser = (name, age, email) => {
+    return {
+        name: name,
+        age: age,
+        email: email,
+        createdAt: new Date(),
+        isActive: true
+    };
+};
+\`\`\`
+`;
+
+export const slideDescriptions = {
+  0: `# 講座の概要
+
+この講座は、プログラミング初心者を対象としたJavaScript入門講座です。
+
+**学習の進め方**:
+- 理論の説明 → 実例の紹介 → 実習
+- 質問は随時受け付けます
+- 実習時間を多めに確保しています
+
+**前提知識**:
+- HTML/CSSの基本的な理解があること
+- テキストエディタが使えること`,
+
+  1: `# JavaScriptの歴史と重要性
+
+JavaScriptは1995年にNetscape社のBrendan Eichによって開発されました。
+
+**なぜ重要なのか**:
+- Web開発の標準言語
+- フロントエンドからバックエンドまでカバー
+- 豊富な求人とキャリア機会
+- 学習コストが比較的低い
+
+**現在の状況**:
+- GitHub上で最も使われている言語
+- Stack Overflow調査で人気上位常連
+- React, Vue, Angularなど強力なフレームワーク`,
+
+  2: `# 開発環境の準備
+
+**ブラウザ**:
+- Chrome DevTools (F12キー)
+- Firefoxの開発者ツール
+- Safari Web Inspector
+
+**エディタ**:
+- Visual Studio Code (推奨)
+- WebStorm
+- Sublime Text
+
+**実行方法**:
+1. HTMLファイルに\`<script>\`タグで記述
+2. ブラウザのコンソールで直接実行
+3. Node.jsでサーバーサイド実行`,
+
+  3: `# 変数宣言の詳細解説
+
+**const の特徴**:
+- 再代入不可 → バグの予防
+- ブロックスコープ → 予測しやすいコード
+- オブジェクトや配列の中身は変更可能
+
+**let の特徴**:
+- 再代入可能
+- ブロックスコープ
+- 同じスコープ内での重複宣言不可
+
+**var を避ける理由**:
+- 関数スコープ → 予期しない動作
+- ホイスティング → デバッグが困難
+- 重複宣言可能 → バグの温床`,
+
+  4: `# 実習のポイント
+
+**良い習慣**:
+- まずconstで宣言し、必要に応じてletに変更
+- 意味のある変数名を使用
+- コメントで処理の意図を記述
+
+**デバッグ方法**:
+- \`console.log()\`で値を確認
+- ブラウザのデバッガーを活用
+- エラーメッセージをよく読む
+
+**次のステップ**:
+- 配列とオブジェクトの操作
+- 条件分岐（if文）
+- ループ処理（for文）`
+};
+
+<MarpViewer 
+  markdownContent={marpContent} 
+  descriptions={slideDescriptions}
+/>
+
+## 📚 講座の特徴
+
+### ✅ 実装されている機能
+- **キーボード操作**: ← → で前後、Space で次へ、Home/End で最初/最後
+- **プログレスバー**: 現在の進行状況を視覚的に表示
+- **レスポンシブデザイン**: スマートフォンでも快適に閲覧
+- **ダークモード対応**: Docusaurusのテーマと自動連携
+
+### 🎯 Marpの利点
+- **純粋なMarkdown** - 既存のMarkdownファイルをそのまま活用
+- **テーマサポート** - 豊富なスタイリングオプション
+- **コードハイライト** - プログラミング講座に最適
+- **PDF出力対応** - 配布資料としても活用可能
+
+## 🔧 カスタマイズ可能な要素
+
+- スライドのテーマ変更
+- キーボードショートカット追加
+- アニメーション効果の調整
+- 講師用ノート表示機能
+
+---
+
+**次のステップ**: このMarpビューワーに講師用ノートやスケジュール機能を統合して、完全な講座プラットフォームに発展させることができます！
