@@ -23,17 +23,14 @@ interface MarpViewerProps {
   theme?: string;
 }
 
+# MarpViewer を Docusaurus で再利用する手順書
 const MarpViewer: React.FC<MarpViewerProps> = ({ 
   markdownContent, 
   theme = 'default' 
-}) => {
   const [slides, setSlides] = useState<string[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [marpCSS, setMarpCSS] = useState<string>('');
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const processMarpContent = async () => {
       try {
         // Marpインスタンス作成
         const marp = new Marp({
@@ -42,16 +39,12 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
             shortcode: true,
             unicode: true
           }
-        });
 
         // テーマ設定
         if (theme !== 'default') {
-          // カスタムテーマがある場合の処理
-          // marp.theme.set(customThemeCSS);
         }
 
         // Markdownをレンダリング
-        const { html, css, comments } = marp.render(markdownContent);
 
         // CSSを保存
         setMarpCSS(css);
@@ -87,13 +80,9 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
             setCurrentSlide(currentSlide + 1);
           }
           break;
-        case 'ArrowLeft':
         case 'PageUp':
           e.preventDefault();
-          if (currentSlide > 0) {
-            setCurrentSlide(currentSlide - 1);
           }
-          break;
         case 'Home':
           e.preventDefault();
           setCurrentSlide(0);
@@ -112,61 +101,38 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
   // CSS動的追加
   useEffect(() => {
     if (marpCSS) {
-      const styleId = 'marp-generated-style';
       let existingStyle = document.getElementById(styleId);
       
       if (existingStyle) {
-        existingStyle.remove();
       }
 
-      const styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      styleElement.textContent = `
         ${marpCSS}
         
         /* DocusaurusとMarpの統合用CSS */
         .marpit-slide {
-          width: 100% !important;
-          height: 500px !important;
           display: flex !important;
-          flex-direction: column !important;
           justify-content: center !important;
           align-items: center !important;
-          padding: 2rem !important;
           box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
           border-radius: 8px !important;
-          background: white !important;
           overflow: auto !important;
-        }
         
-        .marpit-slide h1 {
           font-size: 2.5rem !important;
           margin-bottom: 1rem !important;
-          color: var(--ifm-color-primary) !important;
         }
         
-        .marpit-slide h2 {
           font-size: 2rem !important;
           margin-bottom: 0.8rem !important;
-          color: var(--ifm-color-secondary) !important;
         }
-        
         .marpit-slide ul {
           font-size: 1.2rem !important;
-          line-height: 1.6 !important;
         }
         
-        .marpit-slide code {
           background: var(--ifm-code-background) !important;
           color: var(--ifm-code-color) !important;
-          padding: 0.2rem 0.4rem !important;
-          border-radius: 0.3rem !important;
         }
-        
         .marpit-slide pre {
           background: var(--ifm-code-background) !important;
-          padding: 1rem !important;
-          border-radius: 0.5rem !important;
           overflow-x: auto !important;
           width: 100% !important;
         }
