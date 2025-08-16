@@ -36,14 +36,64 @@ const config: Config = {
     locales: ['en'],
   },
 
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'Linux',
+        path: 'Linux',
+        routeBasePath: 'Linux',
+        sidebarPath: undefined, // 自動生成
+        editUrl: 'https://github.com/ootomonaiso/ootomonaiso_strage',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'NetWork',
+        path: 'NetWork',
+        routeBasePath: 'NetWork',
+        sidebarPath: undefined,
+        editUrl: 'https://github.com/ootomonaiso/ootomonaiso_strage',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'SoftwareDesign',
+        path: 'SoftwareDesign',
+        routeBasePath: 'SoftwareDesign',
+        sidebarPath: undefined,
+        editUrl: 'https://github.com/ootomonaiso/ootomonaiso_strage',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'AICoding',
+        path: 'AICoding',
+        routeBasePath: 'AICoding',
+        sidebarPath: undefined,
+        editUrl: 'https://github.com/ootomonaiso/ootomonaiso_strage',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'AdvancedTech',
+        path: 'AdvancedTech',
+        routeBasePath: 'AdvancedTech',
+        sidebarPath: undefined,
+        editUrl: 'https://github.com/ootomonaiso/ootomonaiso_strage',
+      },
+    ],
+  ],
   presets: [
     [
       'classic',
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
@@ -53,11 +103,8 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -79,15 +126,14 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Tutorial',
-        },
+        {to: '/Linux', label: 'Linux', position: 'left'},
+        {to: '/NetWork', label: 'NetWork', position: 'left'},
+        {to: '/SoftwareDesign', label: 'ソフトウェア設計', position: 'left'},
+        {to: '/AICoding', label: 'AIコーディング', position: 'left'},
+        {to: '/AdvancedTech', label: '応用技術', position: 'left'},
         {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/ootomonaiso/ootomonaiso_strage',
           label: 'GitHub',
           position: 'right',
         },
@@ -97,42 +143,28 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'カテゴリ',
           items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
+            {label: 'Linux', to: '/Linux'},
+            {label: 'NetWork', to: '/NetWork'},
+            {label: 'ソフトウェア設計', to: '/SoftwareDesign'},
+            {label: 'AIコーディング', to: '/AICoding'},
+            {label: '応用技術', to: '/AdvancedTech'},
           ],
         },
         {
-          title: 'Community',
+          title: 'コミュニティ',
           items: [
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
-            },
+            {label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/docusaurus'},
+            {label: 'Discord', href: 'https://discordapp.com/invite/docusaurus'},
+            {label: 'X', href: 'https://x.com/docusaurus'},
           ],
         },
         {
-          title: 'More',
+          title: 'その他',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
-            },
+            {label: 'Blog', to: '/blog'},
+            {label: 'GitHub', href: 'https://github.com/ootomonaiso/ootomonaiso_strage'},
           ],
         },
       ],
