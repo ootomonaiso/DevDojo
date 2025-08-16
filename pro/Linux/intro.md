@@ -1,5 +1,6 @@
 ---
-title: Linux入門
+sidebar_position: 1
+description: Linuxのすばらしさ
 ---
 
 このページはLinuxカテゴリのダミーです。
