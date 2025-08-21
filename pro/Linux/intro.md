@@ -3,7 +3,7 @@ sidebar_position: 1
 description: Linuxのすばらしさ
 ---
 
-# Linux基礎
+# Linuxについて学ぼう
 LinuxのインストールをVMware ESXiで試してみよう
 
 ## 今回環境
