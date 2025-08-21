@@ -4,6 +4,8 @@ description: Linuxのすばらしさ
 ---
 
 # Linux基礎
-Linuxのインストールを
+LinuxのインストールをVMware ESXiで試してみよう
 
-## Linuxとは何か?
+## 今回環境
+インストールするOS : Debian 12.10
+使う仮想化ソフトウェア : 
