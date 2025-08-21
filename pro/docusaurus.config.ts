@@ -113,12 +113,6 @@ const config: Config = {
           ],
         },
         {
-          title: 'コミュニティ',
-          items: [
-            { label: 'Discord', href: 'https://discordapp.com/invite/docusaurus' },
-          ],
-        },
-        {
           title: 'その他',
           items: [
             { label: 'GitHub', href: 'https://github.com/ootomonaiso' },
