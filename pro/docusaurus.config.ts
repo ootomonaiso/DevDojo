@@ -25,11 +25,6 @@ const config: Config = {
           editUrl:
             'https://github.com/ootomonaiso/ootomonaiso_strage',
         },
-        blog: {
-          showReadingTime: true,
-          editUrl:
-            'https://github.com/ootomonaiso/ootomonaiso_strage',
-        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -121,15 +116,12 @@ const config: Config = {
         {
           title: 'コミュニティ',
           items: [
-            { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/docusaurus' },
             { label: 'Discord', href: 'https://discordapp.com/invite/docusaurus' },
-            { label: 'X', href: 'https://x.com/docusaurus' },
           ],
         },
         {
           title: 'その他',
           items: [
-            { label: 'Blog', to: '/blog' },
             { label: 'GitHub', href: 'https://github.com/ootomonaiso' },
           ],
         },
