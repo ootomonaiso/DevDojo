@@ -91,7 +91,6 @@ const config: Config = {
       logo: { alt: 'logo', src: 'img/logo.svg' },
       items: [
         { to: '/docs/intro', position: 'left', label: 'ドキュメント' },
-        { to: '/blog', label: 'Blog', position: 'left' },
         { to: '/Linux/intro', position: 'left', label: 'Linux' },
         { to: '/NetWork/intro', position: 'left', label: 'NetWork' },
         { to: '/SoftwareDesign/intro', position: 'left', label: 'ソフトウェア設計' },
