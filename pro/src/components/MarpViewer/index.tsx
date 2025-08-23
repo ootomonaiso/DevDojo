@@ -179,7 +179,7 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
   return (
     <div className={styles.marpContainer} ref={containerRef}>
       <div className={styles.header}>
-        <h2>Marpスライド</h2>
+        <h2>スライド</h2>
         <div className={styles.slideCounter}>
           {currentSlide + 1} / {slides.length}
         </div>
