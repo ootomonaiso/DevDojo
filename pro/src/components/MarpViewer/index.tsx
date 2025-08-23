@@ -171,7 +171,7 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
   if (slides.length === 0) {
     return (
       <div className={styles.loading}>
-        <div>Marpスライドを生成中...</div>
+        <div>スライドを生成中...</div>
       </div>
     );
   }
