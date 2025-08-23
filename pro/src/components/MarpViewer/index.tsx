@@ -184,16 +184,12 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
           {currentSlide + 1} / {slides.length}
         </div>
       </div>
-
-      {/* プログレスバー */}
       <div className={styles.progressBar}>
         <div 
           className={styles.progress}
           style={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}
         />
       </div>
-
-      {/* スライド表示エリア（16:9の比率ボックス） */}
       <div className={styles.slideContainer}>
         <div className={styles.ratioBox}>
           <div 
