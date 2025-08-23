@@ -178,7 +178,6 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
 
   return (
     <div className={styles.marpContainer} ref={containerRef}>
-      {/* ヘッダー */}
       <div className={styles.header}>
         <h2>Marpスライド</h2>
         <div className={styles.slideCounter}>
