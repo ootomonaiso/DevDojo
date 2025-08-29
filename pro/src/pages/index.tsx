@@ -16,12 +16,12 @@ function HomepageHeader() {
           <Heading as="h1" className="hero__title">
             DevDojo
           </Heading>
-          <p className="hero__subtitle">技術と知識を集めるためのポータル</p>
+          <p className="hero__subtitle">未来の技術をリードする最前線のエンジニアに</p>
           <div className={styles.buttons}>
             <Link
               className="button button--secondary button--lg"
               to="/docs/intro">
-              ドキュメントを見る
+              最初の一歩
             </Link>
           </div>
       </div>

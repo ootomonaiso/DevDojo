@@ -171,30 +171,25 @@ const MarpViewer: React.FC<MarpViewerProps> = ({
   if (slides.length === 0) {
     return (
       <div className={styles.loading}>
-        <div>Marpスライドを生成中...</div>
+        <div>スライドを生成中...</div>
       </div>
     );
   }
 
   return (
     <div className={styles.marpContainer} ref={containerRef}>
-      {/* ヘッダー */}
       <div className={styles.header}>
-        <h2>🎯 Marpスライド</h2>
+        <h2>スライド</h2>
         <div className={styles.slideCounter}>
           {currentSlide + 1} / {slides.length}
         </div>
       </div>
-
-      {/* プログレスバー */}
       <div className={styles.progressBar}>
         <div 
           className={styles.progress}
           style={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}
         />
       </div>
-
-      {/* スライド表示エリア（16:9の比率ボックス） */}
       <div className={styles.slideContainer}>
         <div className={styles.ratioBox}>
           <div 
