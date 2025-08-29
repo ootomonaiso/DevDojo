@@ -16,7 +16,7 @@ function HomepageHeader() {
           <Heading as="h1" className="hero__title">
             DevDojo
           </Heading>
-          <p className="hero__subtitle">未来の技術者を養成する道場</p>
+          <p className="hero__subtitle">未来の技術をリードする最前線のエンジニアに</p>
           <div className={styles.buttons}>
             <Link
               className="button button--secondary button--lg"
