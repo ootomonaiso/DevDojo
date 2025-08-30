@@ -22,10 +22,10 @@ description: LinuxをESXiにぶち込む
 ![](./img/0-2.png)
 
 名前 : 仮想マシンの名前(自分で自分のだとわかる名前つけてね)
-ゲストOSファミリ : Linux
-OSのバージョン　: debian 11 64bit
 
-:::
+ゲストOSファミリ : Linux
+
+OSのバージョン　: debian 11 64bit
 
 ## 3.ストレージの選択
 そのままでok
