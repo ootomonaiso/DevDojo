@@ -1,0 +1,1193 @@
+---
+title: 上級ソフトウェア設計・アーキテクチャ
+description: 大規模システムの設計原則、分散システム、マイクロサービス、ドメイン駆動設計について深く学びます
+sidebar_position: 2
+---
+
+import MarpViewer from '@site/src/components/MarpViewer';
+
+# 🏛️ 上級ソフトウェア設計・アーキテクチャ講座
+
+この講座では、エンタープライズレベルのソフトウェア設計原則、分散システム、マイクロサービスアーキテクチャ、ドメイン駆動設計について深く探究します。
+
+export const marpContent = `---
+marp: true
+theme: default
+paginate: true
+backgroundColor: #fff
+style: |
+  section {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 22px;
+  }
+  h1 {
+    color: #2563eb;
+    font-size: 44px;
+  }
+  h2 {
+    color: #7c3aed;
+    font-size: 32px;
+  }
+  h3 {
+    font-size: 26px;
+  }
+  li {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  p {
+    font-size: 22px;
+    line-height: 1.5;
+  }
+  code {
+    font-size: 18px;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  pre {
+    font-size: 16px;
+  }
+---
+
+# 上級ソフトウェア設計・アーキテクチャ 🏛️
+## エンタープライズ級システムの設計思想
+
+---
+
+# システム設計の複雑性との戦い
+
+## 複雑性の種類
+
+### **本質的複雑性（Essential Complexity）**
+- ビジネス要件自体の複雑さ
+- ドメインロジックの複雑さ
+- 削減不可能な複雑性
+
+### **偶発的複雑性（Accidental Complexity）**
+- 技術選択による複雑さ
+- 設計の不備による複雑さ
+- **我々が制御可能な複雑性**
+
+### 設計の目標
+**偶発的複雑性を最小化し、本質的複雑性を適切に管理する**
+
+---
+
+# ドメイン駆動設計（DDD）の深層
+
+## 戦略的設計（Strategic Design）
+
+### **Bounded Context（境界づけられたコンテキスト）**
+```
+// ECサイトの例
+Sales Context          |  Inventory Context
+- Customer (購買者)     |  - Product (在庫商品)
+- Order (注文)          |  - Stock (在庫数)
+- Product (販売商品)    |  - Warehouse (倉庫)
+
+同じ「Product」でも異なる関心事・属性
+```
+
+### **Context Map**
+- **Shared Kernel**: 共有カーネル
+- **Customer-Supplier**: 上流・下流関係
+- **Anticorruption Layer**: 腐敗防止層
+- **Open Host Service**: 公開ホストサービス
+
+---
+
+# DDD戦術的設計（Tactical Design）
+
+## 核となるパターン
+
+### **Entity vs Value Object**
+```typescript
+// Entity: アイデンティティを持つ
+class User {
+  constructor(
+    private readonly id: UserId,
+    private name: UserName,
+    private email: Email
+  ) {}
+  
+  // アイデンティティによる等価性
+  equals(other: User): boolean {
+    return this.id.equals(other.id);
+  }
+}
+
+// Value Object: 値による等価性
+class Money {
+  constructor(
+    private readonly amount: number,
+    private readonly currency: Currency
+  ) {}
+  
+  // 構造的等価性
+  equals(other: Money): boolean {
+    return this.amount === other.amount && 
+           this.currency === other.currency;
+  }
+}
+```
+
+---
+
+# Aggregate Pattern
+
+## データ整合性の境界
+
+### **Aggregate Root**
+```typescript
+class Order {  // Aggregate Root
+  private items: OrderItem[] = [];
+  private readonly customerId: CustomerId;
+  private status: OrderStatus;
+
+  addItem(product: Product, quantity: number): void {
+    // ビジネスルールの強制
+    if (this.status !== OrderStatus.DRAFT) {
+      throw new Error("確定済み注文には商品を追加できません");
+    }
+    
+    // 不変条件の維持
+    const item = new OrderItem(product, quantity);
+    this.items.push(item);
+    this.recalculateTotal();
+  }
+
+  // Aggregateの境界内でのみ直接アクセス
+  private recalculateTotal(): void {
+    // 合計金額の再計算
+  }
+}
+```
+
+### **ルール**
+- Aggregate外からは**Root**のみアクセス可能
+- Aggregate間の参照は**ID**のみ
+- 1つのトランザクション = 1つのAggregate
+
+---
+
+# CQRS（Command Query Responsibility Segregation）
+
+## 読み取りと書き込みの分離
+
+### **Command Side（書き込み）**
+```typescript
+// Domain Model: Rich Object
+class BankAccount {
+  private balance: Money;
+  private readonly accountId: AccountId;
+
+  withdraw(amount: Money): void {
+    if (this.balance.isLessThan(amount)) {
+      throw new InsufficientFundsError();
+    }
+    this.balance = this.balance.subtract(amount);
+    // Domain Event発行
+    this.addEvent(new MoneyWithdrawnEvent(this.accountId, amount));
+  }
+}
+
+// Command Handler
+class WithdrawMoneyHandler {
+  handle(command: WithdrawMoneyCommand): void {
+    const account = this.repository.findById(command.accountId);
+    account.withdraw(command.amount);
+    this.repository.save(account);
+  }
+}
+```
+
+---
+
+# CQRS（続き）
+
+### **Query Side（読み取り）**
+```typescript
+// Read Model: シンプルなDTO
+interface AccountSummaryReadModel {
+  accountId: string;
+  balance: number;
+  currency: string;
+  lastTransactionDate: Date;
+  transactionCount: number;
+}
+
+// Query Handler
+class GetAccountSummaryHandler {
+  async handle(query: GetAccountSummaryQuery): Promise<AccountSummaryReadModel> {
+    // 最適化されたクエリ
+    return await this.readModelRepository.findByAccountId(query.accountId);
+  }
+}
+
+// Event Handler: Write → Read Model同期
+class MoneyWithdrawnEventHandler {
+  async handle(event: MoneyWithdrawnEvent): Promise<void> {
+    await this.readModelRepository.updateBalance(
+      event.accountId, 
+      event.newBalance
+    );
+  }
+}
+```
+
+### **メリット**
+- 読み取りパフォーマンスの最適化
+- 複雑なクエリロジックの分離
+- スケーラビリティの向上
+
+---
+
+# Event Sourcing
+
+## 状態ではなくイベントを保存
+
+### **従来のアプローチ**
+```sql
+-- 現在の状態のみ保存
+UPDATE accounts SET balance = 1000 WHERE id = 'acc-123';
+```
+
+### **Event Sourcing**
+```typescript
+// イベントストリーム
+const events = [
+  new AccountOpenedEvent('acc-123', 1500),
+  new MoneyWithdrawnEvent('acc-123', 300),
+  new MoneyDepositedEvent('acc-123', 200),
+  new MoneyWithdrawnEvent('acc-123', 400)
+];
+
+// 状態の復元
+class BankAccount {
+  static fromEvents(events: DomainEvent[]): BankAccount {
+    const account = new BankAccount();
+    events.forEach(event => account.apply(event));
+    return account;
+  }
+
+  private apply(event: DomainEvent): void {
+    switch(event.constructor) {
+      case AccountOpenedEvent:
+        this.balance = new Money(event.initialBalance);
+        break;
+      case MoneyWithdrawnEvent:
+        this.balance = this.balance.subtract(event.amount);
+        break;
+      // ...
+    }
+  }
+}
+```
+
+---
+
+# Event Sourcingの深い利点
+
+## **完全な監査証跡**
+- すべての変更が記録される
+- 「なぜこの状態になったか」が追跡可能
+- 規制要件への対応（金融、医療等）
+
+## **時間軸での分析**
+```typescript
+// 過去任意の時点での状態復元
+const accountAt2023Jan = BankAccount.fromEventsUntil(
+  events, 
+  new Date('2023-01-01')
+);
+
+// ビジネス分析
+const monthlyWithdrawals = events
+  .filter(e => e instanceof MoneyWithdrawnEvent)
+  .filter(e => e.timestamp.getMonth() === targetMonth)
+  .reduce((sum, e) => sum + e.amount, 0);
+```
+
+## **イミュータブルデータ**
+- 過去のイベントは変更不可
+- 並行性問題の軽減
+- 分散システムでの一貫性
+
+---
+
+# マイクロサービスアーキテクチャ
+
+## サービス分割の原則
+
+### **単一責任原則（SRP）at Service Level**
+```
+❌ 悪い分割
+├── UserService
+│   ├── ユーザー管理
+│   ├── 認証・認可
+│   ├── 通知送信
+│   └── レポート生成
+
+✅ 良い分割
+├── UserManagementService    (ユーザーCRUD)
+├── AuthenticationService   (認証・認可)
+├── NotificationService     (通知)
+└── ReportingService       (レポート)
+```
+
+### **データベース分離**
+- サービス間でのDB共有は禁止
+- データアクセスはAPIのみ
+- **Database per Service**パターン
+
+---
+
+# サービス間通信の設計
+
+## **同期 vs 非同期**
+
+### **同期通信（REST API）**
+```typescript
+// 直接API呼び出し
+class OrderService {
+  async createOrder(orderData: CreateOrderRequest): Promise<Order> {
+    // 在庫確認（同期）
+    const inventory = await this.inventoryClient.checkStock(orderData.items);
+    if (!inventory.isAvailable) {
+      throw new OutOfStockError();
+    }
+
+    // 支払い処理（同期）
+    const payment = await this.paymentClient.processPayment(orderData.payment);
+    
+    return this.createOrderInDatabase(orderData, payment.id);
+  }
+}
+```
+
+**問題**: サービス障害の連鎖、レスポンス時間の劣化
+
+### **非同期通信（Event-Driven）**
+```typescript
+class OrderService {
+  async createOrder(orderData: CreateOrderRequest): Promise<OrderId> {
+    const orderId = OrderId.generate();
+    
+    // イベント発行
+    await this.eventBus.publish(new OrderCreationRequestedEvent(orderId, orderData));
+    
+    return orderId; // 即座に応答
+  }
+}
+
+// 他サービスでの処理
+class InventoryService {
+  @EventHandler(OrderCreationRequestedEvent)
+  async handleOrderCreationRequested(event: OrderCreationRequestedEvent): Promise<void> {
+    const isAvailable = await this.checkStock(event.items);
+    
+    if (isAvailable) {
+      await this.eventBus.publish(new StockReservedEvent(event.orderId));
+    } else {
+      await this.eventBus.publish(new StockUnavailableEvent(event.orderId));
+    }
+  }
+}
+```
+
+---
+
+# Saga Pattern
+
+## 分散トランザクションの管理
+
+### **Choreography Saga**
+```typescript
+// サービス間の協調によるワークフロー
+class OrderService {
+  @EventHandler(StockReservedEvent)
+  async handleStockReserved(event: StockReservedEvent): Promise<void> {
+    // 次のステップをトリガー
+    await this.eventBus.publish(new ProcessPaymentRequestedEvent(event.orderId));
+  }
+
+  @EventHandler(PaymentProcessedEvent)
+  async handlePaymentProcessed(event: PaymentProcessedEvent): Promise<void> {
+    await this.finalizeOrder(event.orderId);
+    await this.eventBus.publish(new OrderConfirmedEvent(event.orderId));
+  }
+
+  @EventHandler(PaymentFailedEvent)
+  async handlePaymentFailed(event: PaymentFailedEvent): Promise<void> {
+    // 補償アクション
+    await this.eventBus.publish(new ReleaseStockRequestedEvent(event.orderId));
+    await this.cancelOrder(event.orderId);
+  }
+}
+```
+
+### **Orchestrator Saga**
+```typescript
+class OrderSagaOrchestrator {
+  async processOrder(orderId: OrderId): Promise<void> {
+    try {
+      await this.reserveStock(orderId);
+      await this.processPayment(orderId);
+      await this.finalizeOrder(orderId);
+    } catch (error) {
+      await this.compensate(orderId, error.step);
+    }
+  }
+
+  private async compensate(orderId: OrderId, failedStep: SagaStep): Promise<void> {
+    // 実行済みステップの逆順で補償
+    const executedSteps = this.getExecutedSteps(failedStep);
+    for (const step of executedSteps.reverse()) {
+      await step.compensate(orderId);
+    }
+  }
+}
+```
+
+---
+
+# Circuit Breaker Pattern
+
+## 障害の連鎖防止
+
+### **基本実装**
+```typescript
+enum CircuitState {
+  CLOSED,   // 正常
+  OPEN,     // 遮断
+  HALF_OPEN // 半開
+}
+
+class CircuitBreaker<T> {
+  private state = CircuitState.CLOSED;
+  private failureCount = 0;
+  private lastFailureTime?: Date;
+
+  async execute(operation: () => Promise<T>): Promise<T> {
+    if (this.state === CircuitState.OPEN) {
+      if (this.shouldAttemptReset()) {
+        this.state = CircuitState.HALF_OPEN;
+      } else {
+        throw new CircuitBreakerOpenError();
+      }
+    }
+
+    try {
+      const result = await operation();
+      this.onSuccess();
+      return result;
+    } catch (error) {
+      this.onFailure();
+      throw error;
+    }
+  }
+
+  private onSuccess(): void {
+    this.failureCount = 0;
+    this.state = CircuitState.CLOSED;
+  }
+
+  private onFailure(): void {
+    this.failureCount++;
+    this.lastFailureTime = new Date();
+
+    if (this.failureCount >= this.failureThreshold) {
+      this.state = CircuitState.OPEN;
+    }
+  }
+}
+```
+
+---
+
+# Hexagonal Architecture（Ports & Adapters）
+
+## ドメインロジックの保護
+
+### **アーキテクチャ構造**
+```
+     Adapters (外側)          Ports (境界)           Domain (中核)
+┌─────────────────────┐   ┌─────────────────┐   ┌─────────────────┐
+│   REST Controller   │──▶│  Application    │──▶│   Domain        │
+│   Message Handler   │   │  Service Port   │   │   Services      │
+└─────────────────────┘   └─────────────────┘   └─────────────────┘
+                                                 ┌─────────────────┐
+┌─────────────────────┐   ┌─────────────────┐   │   Domain        │
+│  Database Adapter   │◀──│  Repository     │◀──│   Model         │
+│  Message Adapter    │   │  Port           │   │                 │
+└─────────────────────┘   └─────────────────┘   └─────────────────┘
+```
+
+### **実装例**
+```typescript
+// Domain Layer
+interface UserRepository {  // Port
+  save(user: User): Promise<void>;
+  findById(id: UserId): Promise<User | null>;
+}
+
+class UserService {  // Domain Service
+  constructor(private userRepository: UserRepository) {}
+
+  async registerUser(email: Email, password: Password): Promise<User> {
+    const existingUser = await this.userRepository.findByEmail(email);
+    if (existingUser) {
+      throw new EmailAlreadyExistsError();
+    }
+
+    const user = User.create(email, password);
+    await this.userRepository.save(user);
+    return user;
+  }
+}
+
+// Infrastructure Layer
+class PostgreSQLUserRepository implements UserRepository {  // Adapter
+  async save(user: User): Promise<void> {
+    // PostgreSQL specific implementation
+  }
+}
+
+class MongoUserRepository implements UserRepository {  // Adapter
+  async save(user: User): Promise<void> {
+    // MongoDB specific implementation
+  }
+}
+```
+
+---
+
+# Clean Architecture
+
+## 依存性の方向制御
+
+### **依存性ルール**
+```
+🎯 依存の方向: 外側 → 内側 (一方向のみ)
+
+┌────────────────────────────────────────────┐
+│ Frameworks & Drivers (Web, DB, External)  │
+├────────────────────────────────────────────┤
+│ Interface Adapters (Controllers, Gateways)│
+├────────────────────────────────────────────┤
+│ Application Business Rules (Use Cases)    │
+├────────────────────────────────────────────┤
+│ Enterprise Business Rules (Entities)      │  ← 最も安定
+└────────────────────────────────────────────┘
+```
+
+### **Dependency Inversion**
+```typescript
+// ❌ 依存性が逆転している
+class OrderUseCase {
+  private orderRepository = new MySQLOrderRepository(); // 具象への依存
+
+  async createOrder(request: CreateOrderRequest): Promise<void> {
+    // ユースケースロジック
+  }
+}
+
+// ✅ 依存性が正しい方向
+class OrderUseCase {
+  constructor(
+    private orderRepository: OrderRepository, // 抽象への依存
+    private paymentGateway: PaymentGateway   // 抽象への依存
+  ) {}
+
+  async createOrder(request: CreateOrderRequest): Promise<void> {
+    // ユースケースロジック（フレームワークに依存しない）
+  }
+}
+
+// 外側のレイヤーで具象を注入
+const orderUseCase = new OrderUseCase(
+  new MySQLOrderRepository(),
+  new StripePaymentGateway()
+);
+```
+
+---
+
+# 分散システムの理論的基盤
+
+## CAP定理
+
+### **Consistency・Availability・Partition Tolerance**
+```
+┌─────────────────┐    ┌─────────────────┐
+│       CA        │    │       CP        │
+│   RDBMS系       │    │   MongoDB       │
+│ (分散ではない)   │    │   Redis Cluster │
+└─────────────────┘    └─────────────────┘
+           ┌─────────────────┐
+           │       AP        │
+           │   DynamoDB      │
+           │   Cassandra     │
+           └─────────────────┘
+```
+
+### **実用的選択**
+- **CP**: 金融システム、在庫管理
+- **AP**: ソーシャルメディア、ログ収集
+- **CA**: 単一データセンター内システム
+
+## BASE vs ACID
+
+### **ACID (従来)**
+- **Atomicity**: 原子性
+- **Consistency**: 一貫性
+- **Isolation**: 分離性
+- **Durability**: 永続性
+
+### **BASE (分散システム)**
+- **Basically Available**: 基本的可用性
+- **Soft state**: ソフトステート
+- **Eventual consistency**: 結果的整合性
+
+---
+
+# パフォーマンス設計原則
+
+## レイテンシ vs スループット
+
+### **レイテンシ最適化**
+```typescript
+// キャッシュ戦略
+class ProductService {
+  constructor(
+    private cache: CacheService,
+    private repository: ProductRepository
+  ) {}
+
+  async getProduct(id: ProductId): Promise<Product> {
+    // L1: メモリキャッシュ（1ms）
+    let product = this.memoryCache.get(id);
+    if (product) return product;
+
+    // L2: Redisキャッシュ（10ms）
+    product = await this.cache.get(id);
+    if (product) {
+      this.memoryCache.set(id, product);
+      return product;
+    }
+
+    // L3: データベース（100ms）
+    product = await this.repository.findById(id);
+    await this.cache.set(id, product);
+    this.memoryCache.set(id, product);
+    
+    return product;
+  }
+}
+```
+
+### **スループット最適化**
+```typescript
+// バッチ処理・並列化
+class OrderProcessingService {
+  async processBatch(orders: Order[]): Promise<void> {
+    const chunks = this.chunkArray(orders, 100); // バッチサイズ
+
+    await Promise.all(
+      chunks.map(chunk => this.processChunk(chunk))
+    );
+  }
+
+  private async processChunk(orders: Order[]): Promise<void> {
+    // データベース接続プールを活用
+    await this.repository.batchUpdate(orders);
+  }
+}
+```
+
+---
+
+# 分散システムのコンセンサスアルゴリズム
+
+## Raftアルゴリズム
+
+### **リーダー選出プロセス**
+```typescript
+enum NodeState { FOLLOWER, CANDIDATE, LEADER }
+
+class RaftNode {
+  private state = NodeState.FOLLOWER;
+  private currentTerm = 0;
+  private votedFor?: NodeId;
+
+  async startElection(): Promise<void> {
+    this.state = NodeState.CANDIDATE;
+    this.currentTerm++;
+    this.votedFor = this.nodeId;
+
+    const votes = await this.requestVotes();
+    
+    if (votes > this.clusterSize / 2) {
+      this.becomeLeader();
+    } else {
+      this.state = NodeState.FOLLOWER;
+    }
+  }
+
+  async appendEntries(entries: LogEntry[]): Promise<boolean> {
+    if (this.state !== NodeState.LEADER) {
+      throw new NotLeaderError();
+    }
+
+    // 過半数のフォロワーに複製
+    const replicationResults = await Promise.allSettled(
+      this.followers.map(follower => follower.replicate(entries))
+    );
+
+    const successCount = replicationResults
+      .filter(result => result.status === 'fulfilled').length;
+
+    return successCount >= this.clusterSize / 2;
+  }
+}
+```
+
+---
+
+# 最終課題：システム設計演習
+
+## **要件**
+大規模ECサイトのバックエンドシステム設計
+
+### **非機能要件**
+- **99.9%の可用性**
+- **100万同時ユーザー**
+- **グローバル展開**
+- **GDPR準拠**
+
+### **検討項目**
+1. **ドメインモデリング**: Bounded Context設計
+2. **アーキテクチャ選択**: モノリス vs マイクロサービス
+3. **データ戦略**: CQRS, Event Sourcing適用箇所
+4. **分散システム設計**: 一貫性vs可用性のトレードオフ
+5. **セキュリティ**: 認証・認可・監査証跡
+6. **パフォーマンス**: キャッシュ・CDN・負荷分散
+7. **運用**: 監視・ログ・デプロイ戦略
+
+### **成果物**
+- アーキテクチャダイアグラム
+- API設計書
+- データモデル設計
+- 運用設計書
+
+---
+
+# まとめ：エンタープライズアーキテクト への道
+
+## **技術的深度**
+- **理論と実践のバランス**
+- **トレードオフの理解**
+- **コンテキストに応じた判断**
+
+## **ビジネス価値**
+- **技術決定のビジネスインパクト評価**
+- **長期的視点での設計**
+- **チーム・組織への技術伝播**
+
+## **継続的学習**
+- **最新技術動向のキャッチアップ**
+- **失敗事例からの学習**
+- **コミュニティへの貢献**
+
+**「シンプルな解決策が最も美しい」** - でも、その背後には深い理解が必要
+
+`;
+
+export const slideDescriptions = {
+  0: `# 講座の概要
+
+この講座は、大規模システムの設計・運用経験を積んだエンジニア向けの上級講座です。
+
+**対象者**:
+- 3-5年以上の開発経験
+- マイクロサービス・分散システムに興味がある
+- エンタープライズアーキテクトを目指す
+
+**学習目標**:
+- 大規模システムの設計原則の習得
+- ドメイン駆動設計の実践的活用
+- 分散システムの理論と実装
+- パフォーマンス・スケーラビリティ設計`,
+
+  1: `# 複雑性との戦い
+
+ソフトウェアシステムが大規模化するにつれ、複雑性が指数関数的に増大します。
+
+**Fred Brooks の「銀の弾丸はない」**:
+- ソフトウェア開発における本質的困難さ
+- 技術進歩だけでは解決できない根本的な問題
+
+**実際の現場で起こること**:
+- 機能追加時間の指数的増加
+- バグ修正が新たなバグを生む連鎖
+- チーム間のコミュニケーションコスト急増
+- 技術的負債の蓄積
+
+**解決アプローチ**:
+適切な境界設定・責任分離・抽象化レベルの設計`,
+
+  2: `# ドメイン駆動設計の戦略的価値
+
+**ドメインエキスパートとの協調**:
+- 技術者とビジネス専門家の共通言語確立
+- 要件の曖昧さ・認識齟齬の早期発見
+- ビジネスロジックの正確なモデリング
+
+**Bounded Contextの重要性**:
+- 同じ概念でもコンテキストにより意味が異なる
+- コンテキスト境界＝チーム境界＝サービス境界
+- Conway's Law: 組織構造がアーキテクチャに反映される
+
+**実装上の注意点**:
+- Domain Modelの Rich Object化
+- Infrastructure層からの依存排除
+- ドメインイベントによる副作用の分離`,
+
+  3: `# Aggregateパターンの設計考慮事項
+
+**データ整合性の境界設定**:
+- トランザクション境界 = Aggregate境界
+- Aggregate間の参照はIDのみ（Strong Reference禁止）
+- Eventually Consistent between Aggregates
+
+**サイズの最適化**:
+- 大きすぎ：パフォーマンス劣化・競合増加
+- 小さすぎ：ビジネス不変条件の維持困難
+
+**実装パターン**:
+- Aggregate Root以外への直接アクセス禁止
+- Domain Eventによる境界を超えた処理
+- Repository経由でのAggregate永続化`,
+
+  4: `# CQRSの実装戦略
+
+**適用判断基準**:
+- 読み書きの要求特性が大きく異なる
+- 複雑な読み取りクエリが必要
+- スケーラビリティ要件が高い
+
+**Read Model最適化**:
+- 用途別の非正規化データ構造
+- 検索性能を重視したインデックス設計
+- キャッシュフレンドリーな構造
+
+**整合性の保証**:
+- Event-Driven Architecture
+- Projection（読み取りモデル更新）の冪等性
+- 結果的整合性の許容範囲設定`,
+
+  5: `# Event Sourcingの応用領域
+
+**金融・会計システム**:
+- 監査証跡の完全性
+- 規制要件への対応
+- 財務レポートの時点復元
+
+**分析・機械学習**:
+- 履歴データからのパターン発見
+- A/Bテストの効果測定
+- 予測モデルの精度向上
+
+**デバッグ・運用**:
+- 障害時の状態復元
+- パフォーマンス分析
+- ユーザー行動の追跡
+
+**技術的課題**:
+- Event Schema Evolution
+- Snapshot戦略
+- Storage容量の管理`,
+
+  6: `# マイクロサービス分割戦略
+
+**Domain-Driven分割**:
+- Bounded Context = Service境界
+- ビジネス能力による分割
+- Conway's Lawを活用した組織設計
+
+**データ分離原則**:
+- Database per Service
+- Shared Databaseの段階的分離
+- Data Consistencyのトレードオフ
+
+**分割の落とし穴**:
+- Distributed Monolith（分散モノリス）
+- Chatty Interface（過度な通信）
+- Transaction境界の喪失
+
+**成功のためのプラクティス**:
+- API First Design
+- 段階的マイグレーション（Strangler Fig Pattern）
+- Service Meshによる横断的関心事の分離`,
+
+  7: `# 非同期通信の設計パターン
+
+**Message Broker選択**:
+- Apache Kafka: 高スループット・順序保証
+- RabbitMQ: 柔軟なルーティング・信頼性
+- AWS SQS/SNS: マネージドサービス・運用簡素化
+
+**メッセージ設計**:
+- Event Storming→Event Schema設計
+- Backward/Forward Compatibility
+- Message Versioning戦略
+
+**信頼性パターン**:
+- At-least-once delivery + Idempotency
+- Dead Letter Queue
+- Circuit Breaker
+- Retry with Exponential Backoff
+
+**監視・運用**:
+- Message lag監視
+- Error rate tracking
+- Distributed tracing`,
+
+  8: `# Sagaパターンの実装選択
+
+**Choreography vs Orchestration**:
+
+**Choreography**:
+- 利点：結合度低い・スケーラビリティ高い
+- 欠点：フロー把握困難・デバッグ困難
+
+**Orchestration**:
+- 利点：中央制御・可視性高い
+- 欠点：Single Point of Failure・複雑性
+
+**補償処理設計**:
+- Semantic Lock（意味的ロック）
+- Compensating Transaction
+- Timeout戦略
+- 部分的失敗の許容範囲`,
+
+  9: `# Circuit Breakerの実装詳細
+
+**状態遷移の最適化**:
+- 閾値設定：エラー率・連続失敗回数
+- タイムアウト設定：操作タイムアウト・回復判定期間
+- Half-Open時のテスト戦略
+
+**実装上の考慮事項**:
+- Thread Safety
+- メトリクス収集
+- 設定の動的変更
+- Fallback mechanism
+
+**監視・アラート**:
+- Circuit状態の可視化
+- 異常検知・通知
+- 回復時の自動テスト
+
+**商用実装**:
+- Netflix Hystrix
+- Resilience4j
+- AWS App Mesh`,
+
+  10: `# Hexagonal Architectureの実践
+
+**Portsの設計原則**:
+- ドメインの概念で表現
+- 技術的詳細の排除
+- テスタビリティの向上
+
+**Adaptersパターン**:
+- Primary Adapters：外部からの入力
+- Secondary Adapters：外部への出力
+- Test Doubles（Mock・Stub）の活用
+
+**レイヤー間の依存制御**:
+- Dependency Injection Container
+- Interface Segregation Principle
+- 設定外部化（Configuration as Code）
+
+**実装フレームワーク**:
+- Spring Boot（Java）
+- .NET Core
+- NestJS（Node.js）`,
+
+  11: `# Clean Architectureの組織的影響
+
+**チーム構造への影響**:
+- Domain Teamの独立性
+- Infrastructure Teamとの責任分界
+- Feature Teamでの垂直分割
+
+**テスト戦略**:
+- Unit Test：Domain Layer中心
+- Integration Test：Adapters Layer
+- End-to-End Test：User Journey
+
+**開発・デプロイプロセス**:
+- Domain-First Development
+- Infrastructure Last
+- Independent Deployability
+
+**技術選択の自由度**:
+- データベース技術の変更容易性
+- UIフレームワークの選択肢
+- 外部API統合の柔軟性`,
+
+  12: `# CAP定理の実践的応用
+
+**システム要件に応じた選択**:
+
+**CP（一貫性＋分断耐性）**:
+- 金融取引：残高の強整合性
+- 在庫管理：在庫数の正確性
+- 実装：Strong Consistency・Synchronous Replication
+
+**AP（可用性＋分断耐性）**:
+- SNS投稿：即時投稿・後で整合
+- ログ収集：データ損失より可用性
+- 実装：Eventual Consistency・Asynchronous Replication
+
+**実際の設計判断**:
+- Critical Path vs Non-Critical Path
+- Business Impact分析
+- SLA要件との整合性`,
+
+  13: `# パフォーマンス最適化戦略
+
+**計測と最適化の原則**:
+- 「推測ではなく計測」
+- Profiling Tools（APM・分散トレーシング）
+- Load Testing・Stress Testing
+
+**キャッシュ戦略の選択**:
+- Cache-Aside：アプリ制御
+- Write-Through：書き込み時更新
+- Write-Behind：非同期書き込み
+- Refresh-Ahead：事前更新
+
+**データベース最適化**:
+- Index戦略：Covering Index・Partial Index
+- Query最適化：N+1問題・Batch Loading
+- Connection Pooling・Read Replica活用
+
+**分散システムでの考慮事項**:
+- Data Locality（データの局所性）
+- CDN活用：Edge Computing
+- Load Balancing：Round Robin・Weighted・Least Connections`,
+
+  14: `# 分散コンセンサスの実用性
+
+**Raftアルゴリズムの特徴**:
+- Leader-based：わかりやすい・実装容易
+- Strong Consistency保証
+- 過半数での決定：奇数ノード推奨
+
+**実用システムでの採用例**:
+- etcd（Kubernetes）
+- Consul（HashiCorp）
+- TiKV（PingCAP）
+
+**運用上の考慮事項**:
+- Network Partition対応
+- Leader Election時間の最適化
+- Log Compaction戦略
+- Backup・Restore手順
+
+**代替アルゴリズム**:
+- PBFT：Byzantine Fault Tolerance
+- Gossip Protocol：最終的整合性
+- CRDTs：Conflict-free Replicated Data Types`,
+
+  15: `# システム設計演習のアプローチ
+
+**要件分析フェーズ**:
+- 機能要件・非機能要件の明確化
+- ユーザージャーニーマッピング
+- データフロー・シーケンス図
+
+**技術選択の判断基準**:
+- Team Topology適合性
+- 運用・保守コスト
+- ベンダーロックインリスク
+- 技術的負債の評価
+
+**設計文書化**:
+- C4 Model：Context・Container・Component・Code
+- Architecture Decision Records（ADR）
+- Runbook・Playbook
+
+**レビュー・改善プロセス**:
+- Architecture Review Board
+- Post-Mortem・Lessons Learned
+- 継続的アーキテクチャ改善`,
+
+  16: `# エンタープライズアーキテクトの責務
+
+**技術戦略の策定**:
+- Technology Roadmap
+- 標準化・ガバナンス
+- イノベーション vs 安定性のバランス
+
+**組織能力の向上**:
+- 技術教育・メンタリング
+- ベストプラクティスの蓄積・共有
+- 採用・育成戦略
+
+**ビジネス価値の最大化**:
+- ROI・TCO分析
+- Time-to-Market最適化
+- リスク管理・コンプライアンス
+
+**継続的学習の重要性**:
+- 技術動向の調査・検証
+- 業界コミュニティへの参加
+- 失敗事例からの学習・知見共有
+
+**キャリア発展**:
+- T-shaped Skills：専門性＋幅広い知識
+- Technical Leadership
+- Business Acumen`
+};
+
+<MarpViewer 
+  markdownContent={marpContent} 
+  descriptions={Object.values(slideDescriptions)}
+/>
+
+## 🎓 高度な学習内容
+
+### 📐 **理論的基盤**
+- **分散システム理論**: CAP定理、ACID vs BASE、コンセンサスアルゴリズム
+- **ドメイン駆動設計**: 戦略的・戦術的設計の両面
+- **アーキテクチャパターン**: Clean Architecture、Hexagonal Architecture
+- **並行性・一貫性**: Eventual Consistency、Saga Pattern
+
+### 🏗️ **実践的設計技術**
+- **マイクロサービス**: サービス分割戦略、分散データ管理
+- **CQRS & Event Sourcing**: 高性能・高可用性システム
+- **非同期通信**: Event-Driven Architecture、メッセージング
+- **レジリエンス**: Circuit Breaker、Bulkhead、Timeout制御
+
+### 🚀 **スケーラビリティ・パフォーマンス**
+- **データベース設計**: Sharding、Replication、インデックス戦略
+- **キャッシュ戦略**: 多層キャッシュ、CDN活用
+- **負荷分散**: Load Balancing、Auto Scaling
+- **監視・運用**: APM、分散トレーシング、メトリクス設計
+
+## 💼 実務応用
+
+### 🎯 **企業レベルの課題解決**
+- 大規模システムのモダナイゼーション
+- レガシーシステムからの移行戦略
+- 組織・技術の両面でのスケーリング
+- 技術的負債の管理と解決
+
+---
+
+**目標**: 「エンタープライズアーキテクト」として、技術とビジネスの橋渡しができる人材になろう！
