@@ -101,9 +101,13 @@ class LineTracer:
         self._lost_dir = 1   # 消失直前の旋回方向: +1 or -1
         self._lost_sw  = StopWatch()
 
-        # Pi カメラ先読み用 (将来拡張)
-        self._pi_speed_override    = None
-        self._pi_target_override   = None
+        # Pi カメラ先読み用
+        self._pi_speed_override  = None
+        self._pi_target_override = None
+        self._pi_sw      = StopWatch()  # 受信タイムスタンプ管理
+        self._pi_last_rx = -999999      # 初回はタイムアウト扱い
+        self._pi_ev_sw    = StopWatch()  # イベントクールダウン
+        self._pi_ev_ready = False       # 初回は reset() 後まで発火しない問題を回避
 
     # --------------------------------------------------
     # キャリブレーション
@@ -192,31 +196,56 @@ class LineTracer:
         return True
 
     # --------------------------------------------------
-    # Raspberry Pi カメラ連携フック (将来拡張)
+    # Raspberry Pi カメラ連携
     # --------------------------------------------------
 
     def pi_lookahead(self):
-        """
-        Raspberry Pi カメラからの先読み情報を受け取るフック。
+        """USB Serial (stdin) から Pi の JSON を非ブロッキングで受け取る。"""
+        import sys
+        import ujson
 
-        実装例 (Pi 側が UART/USB で JSON を送る場合):
-            import ujson, sys
-            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-                data = ujson.loads(sys.stdin.readline())
-                self._pi_speed_override  = data.get('speed')
-                self._pi_target_override = data.get('target')
+        # 2 秒以上受信なし → オーバーライドをクリアして自律走行に切り替え
+        if self._pi_sw.time() - self._pi_last_rx > 2000:
+            self._pi_speed_override  = None
+            self._pi_target_override = None
 
-        Pi 側でできること:
-            - カーブ曲率の先読み → BASE_SPEED を事前に落とす
-            - 交差点・停止線の検出 → 特殊ハンドリングに切り替え
-            - カラーマーカー認識 → コース分岐の選択
-            - オブジェクト検出 → 障害物回避モードへ
+        if not sys.stdin.any():
+            return
 
-        このメソッドが戻り値を持たず副作用として
-        self._pi_speed_override / self._pi_target_override を書き換えると、
-        以降のループで自動的に反映される設計。
-        """
-        pass  # 現状はパススルー
+        try:
+            data = ujson.loads(sys.stdin.readline())
+            self._pi_speed_override  = data.get('speed')   # int | None
+            self._pi_target_override = data.get('target')  # float | None
+            self._pi_last_rx = self._pi_sw.time()
+
+            event = data.get('event')
+            if event:
+                self._handle_pi_event(event)
+        except Exception:
+            pass  # JSON 不正 / 部分受信は無視
+
+    def _handle_pi_event(self, event):
+        # 同一イベントを 3 秒以内に繰り返し処理しない (停止線が連続送出される対策)
+        # _pi_ev_ready が False の間 (初回) はクールダウンをスキップ
+        if self._pi_ev_ready and self._pi_ev_sw.time() < 3000:
+            return
+        self._pi_ev_ready = True
+        self._pi_ev_sw.reset()
+
+        if event == 'stop':
+            self._stop()
+            self.hub.speaker.beep(600, 600)
+            sw = StopWatch()
+            while sw.time() < 10000:
+                if Button.CENTER in self.hub.buttons.pressed():
+                    break
+                wait(50)
+            self._pi_speed_override  = None
+            self._pi_target_override = None
+            self.pid.reset()
+
+        elif event == 'intersect':
+            pass  # 将来: 分岐選択ロジック
 
     # --------------------------------------------------
     # メインループ
