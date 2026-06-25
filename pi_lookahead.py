@@ -88,9 +88,10 @@ COLOR_RANGES: dict[str, list[tuple[np.ndarray, np.ndarray]]] = {
 
 def setup_camera() -> Picamera2:
     cam = Picamera2()
+    # FrameDurationLimits の単位はマイクロ秒。30fps = 33333 μs
     cfg = cam.create_preview_configuration(
         main={"size": (FRAME_W, FRAME_H), "format": "BGR888"},
-        controls={"FrameRate": 30},
+        controls={"FrameDurationLimits": (33333, 33333)},
     )
     cam.configure(cfg)
     cam.start()
