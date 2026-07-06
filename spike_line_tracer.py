@@ -200,29 +200,46 @@ class LineTracer:
     # --------------------------------------------------
 
     def pi_lookahead(self):
-        """USB Serial (stdin) から Pi の JSON を非ブロッキングで受け取る。"""
-        import sys
+        """BLE (stdin) から Pi の JSON を非ブロッキングで受け取る。
+
+        Pybricks では sys.stdin.any() は使えないため uselect.poll を使う。
+        stdin はプログラムを起動した接続 = BLE 経由で届く。
+        BLE は分割して届くので必ずバッファリングして改行で 1 行に組み立てる。
+        """
+        from usys import stdin
+        from uselect import poll
         import ujson
+
+        # poll は初回だけ登録
+        if not hasattr(self, '_poll'):
+            self._poll = poll()
+            self._poll.register(stdin)
+            self._rx_buf = b''
 
         # 2 秒以上受信なし → オーバーライドをクリアして自律走行に切り替え
         if self._pi_sw.time() - self._pi_last_rx > 2000:
             self._pi_speed_override  = None
             self._pi_target_override = None
 
-        if not sys.stdin.any():
-            return
-
-        try:
-            data = ujson.loads(sys.stdin.readline())
-            self._pi_speed_override  = data.get('speed')   # int | None
-            self._pi_target_override = data.get('target')  # float | None
-            self._pi_last_rx = self._pi_sw.time()
-
-            event = data.get('event')
-            if event:
-                self._handle_pi_event(event)
-        except Exception:
-            pass  # JSON 不正 / 部分受信は無視
+        # 来ている分だけ 1 バイトずつ読み、改行で 1 行を確定させる
+        # (制御ループを止めないよう 1 回あたり最大 256 バイトで打ち切る)
+        n = 0
+        while self._poll.poll(0) and n < 256:
+            self._rx_buf += stdin.buffer.read(1)
+            n += 1
+            if self._rx_buf.endswith(b'\n'):
+                line = self._rx_buf
+                self._rx_buf = b''
+                try:
+                    data = ujson.loads(line)
+                    self._pi_speed_override  = data.get('speed')   # int | None
+                    self._pi_target_override = data.get('target')  # float | None
+                    self._pi_last_rx = self._pi_sw.time()
+                    event = data.get('event')
+                    if event:
+                        self._handle_pi_event(event)
+                except Exception:
+                    pass  # JSON 不正 / 部分受信は無視
 
     def _handle_pi_event(self, event):
         # 同一イベントを 3 秒以内に繰り返し処理しない (停止線が連続送出される対策)
